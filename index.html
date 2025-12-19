@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 ???</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00274C 0%, #001a33 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .lock-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        .lock-icon.unlocked {
+            animation: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .title {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 10px;
+            letter-spacing: 4px;
+        }
+
+        .locked-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFCB05;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .locked-text .letter {
+            display: inline-block;
+        }
+
+        .locked-text .letter.name-letter {
+            color: #FFCB05;
+            text-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
+        }
+
+        .locked-text .letter.static {
+            color: #888;
+        }
+
+        .code-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .code-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            width: 140px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .code-box.correct {
+            border-color: #FFCB05;
+            background: rgba(255, 203, 5, 0.1);
+        }
+
+        .code-box label {
+            display: block;
+            color: #FFCB05;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .code-box input {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #00274C;
+            font-weight: bold;
+        }
+
+        .code-box input:focus {
+            outline: 3px solid #FFCB05;
+        }
+
+        .code-box input:disabled {
+            background: #FFCB05;
+            color: #00274C;
+        }
+
+        /* Scratch off area */
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .scratch-container.active {
+            display: block;
+        }
+
+        .scratch-reveal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #00274C;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFCB05;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px;
+        }
+
+        .scratch-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 11px;
+            font-weight: normal;
+            letter-spacing: 2px;
+            transition: opacity 0.5s ease;
+        }
+
+        .scratch-cover:hover {
+            background: linear-gradient(135deg, #1a1a2e 0%, #1f2b47 50%, #1a1a2e 100%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .scratch-cover.scratched {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Big reveal */
+        .reveal-container {
+            display: none;
+            animation: fadeIn 1s ease;
+        }
+
+        .reveal-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .reveal-title {
+            color: #FFCB05;
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 203, 5, 0.5);
+        }
+
+        .reveal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .reveal-card img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .game-info {
+            color: #00274C;
+        }
+
+        .game-info .matchup {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .game-info .teams {
+            font-size: 22px;
+            color: #00274C;
+            margin-bottom: 20px;
+        }
+
+        .game-info .vs {
+            color: #888;
+            font-size: 18px;
+        }
+
+        .game-info .details {
+            background: #00274C;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .game-info .details .date {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFCB05;
+        }
+
+        .game-info .details .time {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .game-info .details .venue {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .message {
+            margin-top: 30px;
+            color: white;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .message .signature {
+            margin-top: 15px;
+            color: #FFCB05;
+            font-weight: bold;
+        }
+
+        .throwback {
+            margin-top: 30px;
+            animation: fadeIn 1s ease 0.5s both;
+        }
+
+        .throwback-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .throwback-photo {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 3px solid #FFCB05;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .confetti.active {
+            display: block;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            top: -20px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                top: 100vh;
+                transform: rotate(720deg);
+            }
+        }
+
+        /* Progress dots */
+        .progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.complete {
+            background: #FFCB05;
+            box-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
+        }
+
+        .hint {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-top: 30px;
+            font-style: italic;
+        }
+
+        /* Gift Container */
+        .gift-container {
+            display: none;
+            animation: fadeIn 1s ease;
+        }
+
+        .gift-container.active {
+            display: block;
+        }
+
+        .gift-instruction {
+            color: #FFCB05;
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .tap-counter {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .gift-box {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.05);
+        }
+
+        .gift-box.shake {
+            animation: giftShake 0.3s ease;
+        }
+
+        @keyframes giftShake {
+            0%, 100% { transform: rotate(0deg) scale(1.05); }
+            25% { transform: rotate(-5deg) scale(1.05); }
+            75% { transform: rotate(5deg) scale(1.05); }
+        }
+
+        .gift-wrap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            transition: all 0.5s ease;
+        }
+
+        .gift-wrap.layer-1 {
+            background: linear-gradient(135deg, #00274C 0%, #001a33 100%);
+            z-index: 1;
+        }
+
+        .gift-wrap.layer-2 {
+            background: linear-gradient(135deg, #FFCB05 0%, #e6b800 100%);
+            z-index: 2;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .gift-wrap.layer-3 {
+            background: linear-gradient(45deg, #c41e3a 0%, #ff6b6b 50%, #c41e3a 100%);
+            z-index: 3;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .gift-wrap.layer-1.torn {
+            clip-path: polygon(0 0, 30% 0, 20% 50%, 35% 100%, 0 100%);
+        }
+
+        .gift-wrap.layer-2.torn {
+            clip-path: polygon(60% 0, 100% 0, 100% 100%, 70% 100%, 80% 50%);
+        }
+
+        .gift-wrap.layer-3.torn {
+            opacity: 0;
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .gift-ribbon {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(180deg, #FFCB05 0%, #e6b800 50%, #FFCB05 100%);
+            transform: translateY(-50%);
+            z-index: 4;
+        }
+
+        .gift-ribbon::before {
+            content: '';
+            position: absolute;
+            top: -85px;
+            left: 50%;
+            width: 30px;
+            height: 200px;
+            background: linear-gradient(90deg, #FFCB05 0%, #e6b800 50%, #FFCB05 100%);
+            transform: translateX(-50%);
+        }
+
+        .gift-bow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 50px;
+            z-index: 5;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Lock State -->
+        <div id="lockState">
+            <div class="lock-icon" id="lockIcon">🔒</div>
+            
+            <div class="locked-text">
+                <span class="letter name-letter">L</span>
+                <span class="letter name-letter">O</span>
+                <span class="letter name-letter">C</span>
+                <span class="letter static">K</span>
+                <span class="letter static">E</span>
+                <span class="letter static">D</span>
+            </div>
+
+            <div class="code-section">
+                <!-- Lucas -->
+                <div class="code-box" id="lucasBox">
+                    <label>L</label>
+                    <input type="text" id="lucasInput" maxlength="2" placeholder="??" inputmode="numeric">
+                    <div class="scratch-container" id="lucasScratch">
+                        <div class="scratch-reveal">🏒 COLD AS ICE!</div>
+                        <div class="scratch-cover" onclick="scratch('lucas')">tap to reveal</div>
+                    </div>
+                </div>
+
+                <!-- Olivia -->
+                <div class="code-box" id="oliviaBox">
+                    <label>O</label>
+                    <input type="text" id="oliviaInput" maxlength="2" placeholder="??" inputmode="numeric">
+                    <div class="scratch-container" id="oliviaScratch">
+                        <div class="scratch-reveal">🎵 MUSIC TO YOUR EARS!</div>
+                        <div class="scratch-cover" onclick="scratch('olivia')">tap to reveal</div>
+                    </div>
+                </div>
+
+                <!-- Cole -->
+                <div class="code-box" id="coleBox">
+                    <label>C</label>
+                    <input type="text" id="coleInput" maxlength="2" placeholder="??" inputmode="numeric">
+                    <div class="scratch-container" id="coleScratch">
+                        <div class="scratch-reveal">🛁 SQUEAKY CLEAN!</div>
+                        <div class="scratch-cover" onclick="scratch('cole')">tap to reveal</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress">
+                <div class="progress-dot" id="dot1"></div>
+                <div class="progress-dot" id="dot2"></div>
+                <div class="progress-dot" id="dot3"></div>
+            </div>
+
+            <p class="hint" id="hint">Look at your initials...</p>
+        </div>
+
+        <!-- Gift Unwrap State -->
+        <div class="gift-container" id="giftState">
+            <div class="gift-instruction">You unlocked it! Now unwrap your gift...</div>
+            <div class="tap-counter" id="tapCounter">Tap 3 more times!</div>
+            
+            <div class="gift-box" id="giftBox" onclick="unwrapGift()">
+                <div class="gift-wrap layer-1" id="wrap1"></div>
+                <div class="gift-wrap layer-2" id="wrap2"></div>
+                <div class="gift-wrap layer-3" id="wrap3"></div>
+                <div class="gift-ribbon"></div>
+                <div class="gift-bow">🎀</div>
+            </div>
+            
+            <!-- Hidden audio player -->
+            <audio id="audioPlayer" preload="auto">
+                <source src="hail-to-the-victors_-made-with-Voicemod.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <!-- Reveal State -->
+        <div class="reveal-container" id="revealState">
+            <div class="reveal-title">YOU'RE GOING TO A GAME!</div>
+            
+            <div class="reveal-card">
+                <div class="game-info">
+                    <div class="matchup">🏒 HOCKEY 🏒</div>
+                    <div class="teams">
+                        <div style="color: #00274C; font-weight: bold;">MICHIGAN</div>
+                        <div class="vs">vs</div>
+                        <div style="color: #0C2340; font-weight: bold;">NOTRE DAME</div>
+                    </div>
+                    <div class="details">
+                        <div class="date">Saturday, January 10th</div>
+                        <div class="time">7:00 PM</div>
+                        <div class="venue">Yost Ice Arena • Ann Arbor</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="message">
+                You're going to a Michigan Hockey game!<br>
+                <span class="signature">🎄 Merry Christmas! Love, Uncle Tom & Uncle Rick 🎄</span>
+            </div>
+
+            <div class="throwback">
+                <div class="throwback-label">Remember last year?</div>
+                <img src="family-photo.jpeg" alt="Last year's game" class="throwback-photo">
+            </div>
+        </div>
+
+        <!-- Confetti -->
+        <div class="confetti" id="confetti"></div>
+    </div>
+
+    <script>
+        const correctCodes = {
+            lucas: '01',
+            olivia: '10',
+            cole: '26'
+        };
+
+        let completed = {
+            lucas: false,
+            olivia: false,
+            cole: false
+        };
+
+        let unwrapTaps = 0;
+
+        // Input handlers
+        document.getElementById('lucasInput').addEventListener('input', (e) => checkCode('lucas', e.target.value));
+        document.getElementById('oliviaInput').addEventListener('input', (e) => checkCode('olivia', e.target.value));
+        document.getElementById('coleInput').addEventListener('input', (e) => checkCode('cole', e.target.value));
+
+        function checkCode(name, value) {
+            if (value === correctCodes[name]) {
+                completed[name] = true;
+                
+                // Mark box as correct
+                document.getElementById(name + 'Box').classList.add('correct');
+                document.getElementById(name + 'Input').disabled = true;
+                
+                // Show scratch area
+                document.getElementById(name + 'Scratch').classList.add('active');
+                
+                // Update progress dots
+                updateProgress();
+                
+                // Check if all complete
+                checkAllComplete();
+            }
+        }
+
+        function scratch(name) {
+            const cover = document.querySelector('#' + name + 'Scratch .scratch-cover');
+            cover.classList.add('scratched');
+            
+            // Play a little vibration if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function updateProgress() {
+            const dots = ['dot1', 'dot2', 'dot3'];
+            const names = ['lucas', 'olivia', 'cole'];
+            
+            names.forEach((name, index) => {
+                if (completed[name]) {
+                    document.getElementById(dots[index]).classList.add('complete');
+                }
+            });
+        }
+
+        function checkAllComplete() {
+            if (completed.lucas && completed.olivia && completed.cole) {
+                // Update hint
+                document.getElementById('hint').textContent = 'All codes entered! Tap your cards then watch for your gift...';
+                document.getElementById('hint').style.color = '#FFCB05';
+                
+                // Change lock icon
+                document.getElementById('lockIcon').textContent = '🔓';
+                document.getElementById('lockIcon').classList.add('unlocked');
+                
+                // Wait a moment then show gift
+                setTimeout(() => {
+                    showGift();
+                }, 2500);
+            }
+        }
+
+        function showGift() {
+            // Hide lock state
+            document.getElementById('lockState').style.display = 'none';
+            
+            // Show gift state
+            document.getElementById('giftState').classList.add('active');
+        }
+
+        function unwrapGift() {
+            unwrapTaps++;
+            
+            // Vibrate feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+            
+            // Start music on first tap (user interaction required for autoplay)
+            if (unwrapTaps === 1) {
+                document.getElementById('audioPlayer').play();
+                document.getElementById('wrap1').classList.add('torn');
+                document.getElementById('tapCounter').textContent = 'Tap 2 more times!';
+                document.getElementById('giftBox').classList.add('shake');
+                setTimeout(() => document.getElementById('giftBox').classList.remove('shake'), 300);
+            } else if (unwrapTaps === 2) {
+                document.getElementById('wrap2').classList.add('torn');
+                document.getElementById('tapCounter').textContent = 'Tap 1 more time!';
+                document.getElementById('giftBox').classList.add('shake');
+                setTimeout(() => document.getElementById('giftBox').classList.remove('shake'), 300);
+            } else if (unwrapTaps === 3) {
+                document.getElementById('wrap3').classList.add('torn');
+                document.getElementById('tapCounter').textContent = '';
+                
+                // Open the gift
+                setTimeout(() => {
+                    triggerReveal();
+                }, 500);
+            }
+        }
+
+        function triggerReveal() {
+            // Hide gift state
+            document.getElementById('giftState').style.display = 'none';
+            
+            // Show reveal
+            document.getElementById('revealState').classList.add('active');
+            
+            // Trigger confetti
+            createConfetti();
+        }
+
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti');
+            confettiContainer.classList.add('active');
+            
+            const colors = ['#00274C', '#FFCB05', '#ffffff', '#0C2340', '#C99700'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    piece.style.left = Math.random() * 100 + 'vw';
+                    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    piece.style.animationDelay = Math.random() * 0.5 + 's';
+                    confettiContainer.appendChild(piece);
+                    
+                    // Remove after animation
+                    setTimeout(() => piece.remove(), 4000);
+                }, i * 30);
+            }
+        }
+
+        // Easter egg: if they type "GOBLUE" anywhere
+        let typed = '';
+        document.addEventListener('keypress', (e) => {
+            typed += e.key.toUpperCase();
+            if (typed.includes('GOBLUE')) {
+                document.body.style.background = 'linear-gradient(135deg, #FFCB05 0%, #00274C 100%)';
+                typed = '';
+            }
+            if (typed.length > 10) typed = typed.slice(-10);
+        });
+    </script>
+</body>
+</html>
